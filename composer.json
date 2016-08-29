@@ -22,7 +22,7 @@
   },
   "extra": {
     "name": "aggregate_column",
-    "class": "\\Athens\\PropelJS\\Behavior"
+    "class": "\\Athens\\PropelJS\\PropelJSBehavior"
   }
 
 }
