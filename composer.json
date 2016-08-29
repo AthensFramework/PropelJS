@@ -1,0 +1,28 @@
+{
+  "name" : "athens/propel-js",
+  "type" : "propel-behavior",
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  },
+  "autoload-dev": {
+    "classmap": [
+      "test/"
+    ]
+  },
+  "require": {
+    "propel/propel": "~2.0@dev"
+  },
+  "require-dev": {
+    "phpdocumentor/phpdocumentor": "2.7.*",
+    "phpunit/phpunit": "4.5.*",
+    "codeclimate/php-test-reporter": "dev-master",
+    "athens/standard": "*"
+  },
+  "extra": {
+    "name": "aggregate_column",
+    "class": "\\Athens\\PropelJS\\Behavior"
+  }
+
+}
