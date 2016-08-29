@@ -21,7 +21,7 @@
     "athens/standard": "*"
   },
   "extra": {
-    "name": "aggregate_column",
+    "name": "propel_js",
     "class": "\\Athens\\PropelJS\\PropelJSBehavior"
   }
 
