@@ -54,6 +54,31 @@ this plugin. You can read more about [Propel behaviors](http://propelorm.org/doc
 This guide assumes that you're using [Composer](https://getcomposer.org/) for dependency management, although it is
 possible to use PropelJS without using Composer.
 
+This guide will use the schema given above and the following project structure:
+
+```
+├── composer.json
+├── propel.inc
+├── schema.xml
+├── generated-api/
+│   └── API.php
+├── generated-classes/
+│   └── Bookstore
+│       └── ...
+├── generated-js/
+│   └── bookstore.js
+├── generated-migrations/
+├── generated-sql/
+├── vendor/
+│   └── ...
+└── webroot/
+    ├── about.php
+    └── index.php
+```
+
+The `webroot/` directory will serve as the root of our web domain, with `index.php` and `about.php` addressed as
+`http://example.net/index.php` and `http://example.net/about.php`.
+
 
 Step 1: Installation
 --------------------
@@ -111,30 +136,111 @@ You should now have a `generated-api/` directory and a `generated-js/` directory
 `generated-classes/` directory.
 
 ```
-├── generated-api/
-│   ├── API.php
+├── composer.json
+├── propel.inc
+├── schema.xml
+├── generated-api/        <- New
+│   └── API.php          <- New
 ├── generated-classes/
-│   └── Bookstore/
-│       ├── Author.php
-│       ├── AuthorQuery.php
-│       ├── Book.php
-│       ├── BookQuery.php
-│       ├── Base/
-│       │   ├── Author.php
-│       │   ├── AuthorQuery.php
-│       │   ├── Book.php
-│       │   ├── BookQuery.php
-│       ├── Map/
-│       │   ├── AuthorTableMap.php
-│       │   ├── BookTableMap.php
-├── generated-js/
-│   ├── bookstore.js
+│   └── Bookstore
+│       └── ...
+├── generated-js/         <- New
+│   └── bookstore.js     <- New
 ├── generated-migrations/
 ├── generated-sql/
-├── propel.inc
-└── schema.xml
+├── vendor
+│   └── ...
+└── webroot
+    ├── about.php
+    └── index.php
 ```
 
+Step 4: Add API.php to Autoload
+-------------------------------
+
+If you're using Composer or any other autoloading scheme, then you need to add the `API` class inside `API.php` to that
+autoloader. For Composer, add the `generated-api/` directory to the `autoload` section of your `composer.json`. For example:
+
+```
+...
+"autoload": {
+        "classmap": [
+            "generated-classes/",
+            "generated-api/",
+        ]
+    }
+...
+```
+
+Step 5: Create an API Endpoint
+------------------------------
+
+Create an `api` directory and an `index.php` to serve API requests.
+
+```
+├── composer.json
+├── propel.inc
+├── schema.xml
+├── generated-api/
+│   └── API.php
+├── generated-classes/
+│   └── Bookstore
+│       └── ...
+├── generated-js/
+│   └── bookstore.js
+├── generated-migrations/
+├── generated-sql/
+├── vendor
+│   └── ...
+└── webroot
+    ├── about.php
+    ├── api              <- This directory
+    │   ├── .htaccess   <- This file
+    │   └── index.php   <- And this file
+    └── index.php
+```
+
+```
+<?php
+/** api/index.php */
+
+require_once dirname(__FILE__) ."/../vendor/autoload.php";
+
+echo \Bookstore\API::handle();
+```
+
+For your own project, the namespace for `API` won't be `Bookstore`. Change `Bookstore` to the namespace of your Propel
+files. If in doubt, check the namespace declaration in `generated-api/API.php`.
+
+The `.htaccess` file is explained in the next step.
+
+Step 6: Request Routing
+-------------------
+
+In order to serve API requests such as `GET /api/authors/2`, we have to tell Apache to direct any requests within the
+'api/' directory to the 'api/index.php' file.
+
+If you're using an Apache web server, then this can be accomplished with a `.htaccess` file. The following `api\.htaccess`
+example is likely to work on your server:
+
+```
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Change '/api/index.php' to the actual address of your API index.
+RewriteRule ^(.*)$ /api/index.php [L]
+```
+
+However *this may not work on your particular server*: your server might not have mod-rewrite, or your Apache config
+might not allow you to use it on your site.
+
+Consult your local `.htaccess` wizard if you need help.
+
+Step 7: Include the JavaScript
+------------------------------
+
+In order for our web pages to include the `bookstore.js`, it has to be accessible to the web. To accomplish this.
 
 Compatibility
 =============
