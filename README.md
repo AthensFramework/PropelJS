@@ -1,9 +1,8 @@
 PropelJS
 =============
 
-Interact with your [Propel](http://propelorm.org/) database, in JavaScript.
-
-PropelJS generates a JavaScript library from your Propel schema.
+Interact with your [Propel](http://propelorm.org/) database, in JavaScript. PropelJS generates a JavaScript library
+from your Propel schema.
 
 PropelJS is a behavior plugin for the [Propel](http://propelorm.org/) PHP ORM. You must be using Propel in order to use
 this package.
@@ -69,11 +68,33 @@ PropelJS creates the JavaScript library automatically every time you run `propel
 How it Works
 ============
 
+PropelJS is a Propel database behavior. Each time you run `propel model:build`, it will generate a JavaScript library
+and an API handler class.
 
+In your backend, you create an API endpoint which invokes the `::handle` method of the API handler class. In your
+frontend, you initialize a database connection to that endpoint. Then, all of your commands like `db.authors(3).get();`
+are routed through the API handler and Propel's database connection.
 
+Brief Setup Guide
+=================
 
-Example Setup
-=============
+The following steps assume you're using [Composer](https://getcomposer.org/) and the
+[LAMP stack](https://en.wikipedia.org/wiki/LAMP_%28software_bundle%29). If you're not using Composer, then you
+can adapt these instructions to your own deployment environment.
+
+1. Install PropelJS: Add `"athens/propel-js": "0.*"` to your Composer dependencies and run `composer update`.
+
+2. Propel Schema: Add the `<behavior name="propel_js" />` between your `<database></database>` tags. PropelJS
+   is a *database* behavior, so it should *not* be placed inside `<table></table>` tags.
+
+3. Build Your Models: Run `propel model:build`. This creates a `generated-api/API.php` file and a `generated-js/your-db-name.js` file.
+
+4. Add `API.php` to Autoload: Add `"generated-api/"` to your `composer.json` autoloading, alongside `"generated-classes/"`.
+
+5. Create an API endpoint. You now need to create a web-accessible directory to serve as your API endpoint.
+
+Detailed Example
+================
 
 This example demonstrates the basic steps that you'll need to complete to use PropelJS. We'll use the
 [LAMP stack](https://en.wikipedia.org/wiki/LAMP_%28software_bundle%29) plus [Composer](https://getcomposer.org/)
@@ -88,17 +109,10 @@ This example will use the following project structure:
 ├── composer.json
 ├── propel.inc
 ├── schema.xml
-├── generated-api/
-│   └── API.php
 ├── generated-classes/
-│   └── Bookstore
-│       └── ...
-├── generated-js/
-│   └── bookstore.js
 ├── generated-migrations/
 ├── generated-sql/
 ├── vendor/
-│   └── ...
 └── webroot/
     ├── about.php
     └── index.php
@@ -172,15 +186,12 @@ You should now have a `generated-api/` directory and a `generated-js/` directory
 ├── generated-api/        <- New
 │   └── API.php          <- New
 ├── generated-classes/
-│   └── Bookstore
-│       └── ...
 ├── generated-js/         <- New
 │   └── bookstore.js     <- New
 ├── generated-migrations/
 ├── generated-sql/
-├── vendor
-│   └── ...
-└── webroot
+├── vendor/
+└── webroot/
     ├── about.php
     └── index.php
 ```
@@ -214,19 +225,16 @@ Create an `api` directory and an `index.php` to serve API requests.
 ├── generated-api/
 │   └── API.php
 ├── generated-classes/
-│   └── Bookstore
-│       └── ...
 ├── generated-js/
 │   └── bookstore.js
 ├── generated-migrations/
 ├── generated-sql/
-├── vendor
-│   └── ...
-└── webroot
-    ├── about.php
-    ├── api              <- This directory
+├── vendor/
+└── webroot/
+    ├── api/             <- This directory
     │   ├── .htaccess   <- This file
     │   └── index.php   <- And this file
+    ├── about.php
     └── index.php
 ```
 
@@ -290,20 +298,17 @@ I would normally choose (1) to ease deployment, but for demonstration purposes w
 ├── generated-api/
 │   └── API.php
 ├── generated-classes/
-│   └── Bookstore
-│       └── ...
 ├── generated-js/
 │   └── bookstore.js
 ├── generated-migrations/
 ├── generated-sql/
-├── vendor
-│   └── ...
-└── webroot
-    ├── about.php
-    ├── api
+├── vendor/
+└── webroot/
+    ├── api/
     │   ├── .htaccess
     │   └── index.php
     ├── bookstore.js      <- Paste bookstore.js here
+    ├── about.php
     └── index.php
 ```
 
@@ -344,6 +349,11 @@ we created in Step 7:
 
 That's it! Now you can create, retrieve, update, and delete authors and books as in the example above.
 
+Connection Configuration
+========================
+
+JavaScript Library Syntax
+=========================
 
 Compatibility
 =============
