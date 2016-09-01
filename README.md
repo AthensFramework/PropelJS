@@ -422,6 +422,50 @@ example:
 JavaScript Library Syntax
 =========================
 
+The PropelJS interface is built on method cascading and jQuery promises.
+
+Creating and manipulating instances:
+```
+// Configure a connection to the database.
+var db = bookstore.propelJS({baseAddress:'/api/'});
+
+// Create a new author
+var myAuthor = bookstore.authors();
+
+// Set the author details:
+myAuthor.setFirstName('Sam');
+myAuthor.setLastName('Morgan');
+
+// Create a new author and set details using method cascading:
+var myAuthor2 = bookstore.authors()
+    .setFirstName('Terri')
+    .setLastName('Johns');
+
+// Create a book:
+var myBook = bookstore.books()
+    .setTitle('Cold Winds');
+```
+
+Saving to the database:
+```
+myAuthor.save();
+```
+
+Each instance has a `get`, `save`, and `delete` method. These database I/O methods return jQuery promises for asynchronous
+response handling. For example:
+```
+// Save myAuthor2 to the database. When that is done, retrieve the author id
+// returned by the database and assign it to the AuthorID of myBook. Then save
+// myBook.
+
+myAuthor2.save()
+    .then(
+        function(author) {
+            myBook.setAuthorId(author.getId()).save();
+        }
+    );
+```
+
 Compatibility
 =============
 
