@@ -3,6 +3,11 @@ PropelJS
 
 Interact with your [Propel](http://propelorm.org/) database, in JavaScript.
 
+PropelJS generates a JavaScript library from your Propel schema.
+
+PropelJS is a behavior plugin for the [Propel](http://propelorm.org/) PHP ORM. You must be using Propel in order to use
+this package.
+
 Example
 =======
 
@@ -10,13 +15,28 @@ Write the following JavaScript:
 ```
 var db = bookstore.propelJS({baseAddress:'/api/'});
 
-myNewBook = db.books();
-myNewBook.setTitle('Grapes of Wrath II: Shareholders' Revenge).setAuthorId(1).save()
-     .then(
-         function(visitor) {
-             console.log(visitor.getId());
-         }
-     );
+// Retrieve a book and log its title.
+db.books(2).get().then(
+    function(book) {
+        console.log(book.getTitle());
+    }
+
+// Create an author and a book they've written
+db.authors()
+    .setFirstName('John')
+    .setLastName('Steinbeck Jr.')
+    .save()
+    .then(
+        function(author) {
+            db.books()
+                .setTitle('Grapes of Wrath II')
+                .setAuthorId(author.getId())
+                .save();
+        }
+    );
+
+// Remove a book from the database.
+db.books(5).delete();
 ```
 
 Given the following schema:
@@ -44,17 +64,25 @@ Given the following schema:
 </database>
 ```
 
+PropelJS creates the JavaScript library automatically every time you run `propel model:build`.
 
-Start Guide
-===========
+How it Works
+============
 
-PropelJS is a behavior plugin for the [Propel](http://propelorm.org/) PHP ORM. You must be using Propel in order to use
-this plugin. You can read more about [Propel behaviors](http://propelorm.org/documentation/06-behaviors.html).
 
-This guide assumes that you're using [Composer](https://getcomposer.org/) for dependency management, although it is
-possible to use PropelJS without using Composer.
 
-This guide will use the schema given above and the following project structure:
+
+Example Setup
+=============
+
+This example demonstrates the basic steps that you'll need to complete to use PropelJS. We'll use the
+[LAMP stack](https://en.wikipedia.org/wiki/LAMP_%28software_bundle%29) plus [Composer](https://getcomposer.org/)
+for dependency management.
+
+The specific details of this example may or may not work on your server, depending on its configuration. And I've
+chosen some details that favor easy security over easy deployment; adapt this example to your own practices.
+
+This example will use the following project structure:
 
 ```
 ├── composer.json
@@ -83,7 +111,8 @@ The `webroot/` directory will serve as the root of our web domain, with `index.p
 Step 1: Installation
 --------------------
 
-This library is published on packagist. To install using Composer, add the `"athens/propel-js": "0.*"` line to your `"require"` dependencies:
+This library is published on Packagist. To install using Composer, add the `"athens/propel-js": "0.*"` line to
+your `"require"` section:
 
 ```
 {
@@ -125,7 +154,8 @@ your database schema. For example:
 </database>
 ```
 
-Take note that `<behavior name="propel_js" />` should *not* be placed inside your `<table></table>` tags.
+Take note that `<behavior name="propel_js" />` should be placed inside your `<database></database>` tags, but *not*
+inside your `<table></table>` tags.
 
 Step 3: Rebuild Your Models
 ---------------------------
@@ -206,6 +236,10 @@ Create an `api` directory and an `index.php` to serve API requests.
 
 require_once dirname(__FILE__) ."/../vendor/autoload.php";
 
+/**
+ * The 'Bookstore' namespace comes from our database schema definition.
+ * Your project will probably have a different namespace.
+ */
 echo \Bookstore\API::handle();
 ```
 
@@ -228,19 +262,88 @@ RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Change '/api/index.php' to the actual address of your API index.
+# You may need to change '/api/index.php' to the actual absolute address of your API index.
 RewriteRule ^(.*)$ /api/index.php [L]
 ```
 
 However *this may not work on your particular server*: your server might not have mod-rewrite, or your Apache config
 might not allow you to use it on your site.
 
-Consult your local `.htaccess` wizard if you need help.
+Consult your local `.htaccess` guru if you need help.
 
 Step 7: Include the JavaScript
 ------------------------------
 
-In order for our web pages to include the `bookstore.js`, it has to be accessible to the web. To accomplish this.
+In order for our web pages to include the `bookstore.js`, it has to be accessible to the web. There are two ways to
+accomplish this:
+
+1. Configure your server/project so that the `generated-js/` directory is accessible to the web.
+2. Copy the `bookstore.js` file into a web-accessible directory.
+
+I would normally choose (1) to ease deployment, but for demonstration purposes we'll demonstrate (2) by copying
+`bookstore.js` into the `webroot/` directory:
+
+```
+├── composer.json
+├── propel.inc
+├── schema.xml
+├── generated-api/
+│   └── API.php
+├── generated-classes/
+│   └── Bookstore
+│       └── ...
+├── generated-js/
+│   └── bookstore.js
+├── generated-migrations/
+├── generated-sql/
+├── vendor
+│   └── ...
+└── webroot
+    ├── about.php
+    ├── api
+    │   ├── .htaccess
+    │   └── index.php
+    ├── bookstore.js      <- Paste bookstore.js here
+    └── index.php
+```
+
+Now `bookstore.js` is addressable as `http://example.net/bookstore.js`, and you can include it in the head
+of your html files:
+
+```
+<head>
+...
+    <!-- PropelJS requires JQuery -->
+    <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="/bookstore.js"></script>
+...
+</head>
+
+```
+
+Step 8: Configure a Connection
+-------------------------------
+
+Finally, we configure a PropelJS connection. This can go right below the `<script src="/bookstore.js"></script>` tag
+we created in Step 7:
+
+```
+<head>
+...
+    <!-- PropelJS requires JQuery -->
+    <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="/bookstore.js"></script>
+
+    <script type="text/javascript">
+        var db = bookstore.propelJS({baseAddress:'/api/'});
+    </script>
+...
+</head>
+
+```
+
+That's it! Now you can create, retrieve, update, and delete authors and books as in the example above.
+
 
 Compatibility
 =============
