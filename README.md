@@ -394,6 +394,31 @@ That's it! Now you can create, retrieve, update, and delete authors and books as
 Connection Configuration
 ========================
 
+In the examples above, we use `var db = bookstore.propelJS({baseAddress:'/api/'});` to create a database connection.
+The dictionary `{baseAddress:'/api/'}` represents the configuration options used to create the connection, but
+`baseAddress` is not the only available option.
+
+The available options are:
+
+Option      | Required | Description                                              | Default | Example
+----------- | -------- | -------------------------------------------------------- | ------- | ------
+baseAddress | Yes      | The absolute address of your base API endpoint directory | N/A     | '/api/'
+headers     | No       | Extra headers to include in each request.                | {}      | {'CSRF-Token' : 'c06pmdts636djbbe'}
+
+The `headers` option would typically be used to send authentication headers for a CSRF or OAuth protected API. For
+example:
+
+```
+    var db = bookstore.propelJS(
+        {
+            baseAddress: '/api/',
+            headers: {
+                'CSRF-TOKEN': 'c06pmdts636djbbe'
+            }
+        }
+    };
+```
+
 JavaScript Library Syntax
 =========================
 
@@ -401,6 +426,7 @@ Compatibility
 =============
 
 * PHP 5.5, 5.6, 7.0
+* Propel 2
 
 Todo
 ====
