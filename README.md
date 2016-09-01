@@ -91,7 +91,49 @@ can adapt these instructions to your own deployment environment.
 
 4. Add `API.php` to Autoload: Add `"generated-api/"` to your `composer.json` autoloading, alongside `"generated-classes/"`.
 
-5. Create an API endpoint. You now need to create a web-accessible directory to serve as your API endpoint.
+5. Create an API Endpoint: You now need to create a web-accessible directory to serve as your API endpoint. For example,
+   the `api/` directory could be your API endpoint using the following `api/index.php` sample:
+
+   ```
+   require_once "/path/to/your/autoload.php";
+
+   use \YourPropelProjectNamespace\API;
+
+   echo API::handle();
+   ```
+
+6. Request Routing: All requests to your API (eg: `api/authors/2`) need to be routed to `api/index.php` by your
+   webserver. Depending on your server configuration, the following `api/.htaccess` might work:
+
+   ```
+   RewriteEngine on
+   RewriteCond %{REQUEST_FILENAME} !-f
+   RewriteCond %{REQUEST_FILENAME} !-d
+
+   RewriteRule ^(.*)$ /absolute/path/to/api/index.php [L]
+   ```
+
+7. Include the JavaScript: You can either copy your `your-db-name.js` into a web accessible directory or you can
+   configure your server to make the `generated-js/` directory web accessible. In either case, you'll need to
+   include `your-db-name.js` and jQuery in your page headers:
+
+   ```
+   <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+   <script src="/bookstore.js"></script>
+   ```
+
+8. Configure the Connection: Now you have to tell your JavaScript library where to find your API endpoint by
+   configuring a database connection. For example:
+
+   ```
+   var db = bookstore.propelJS({baseAddress:'/api/'});
+   ```
+
+   You can read about more [configuration options](#connection-configuration).
+
+That's it! The `db` variable is now your handle for communicating with the database. See
+[JavaScript Library Syntax](#javascript-library-syntax) for more information on how to use your auto generated
+library.
 
 Detailed Example
 ================
