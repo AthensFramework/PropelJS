@@ -1,5 +1,7 @@
 {
   "name" : "athens/propel-js",
+  "license": "MIT",
+  "description": "Interact with your Propel database, in JavaScript.",
   "type" : "propel-behavior",
   "autoload": {
     "classmap": [
