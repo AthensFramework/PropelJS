@@ -466,6 +466,29 @@ myAuthor2.save()
     );
 ```
 
+Retrieving an instance from the database:
+```
+// Retrieve the author with id 4, then log their name
+db.authors(4)
+    .get
+    .then(
+        function(author) {
+            console.log(author.getFirstName());
+        }
+    );
+```
+
+Deleting an instance from the database:
+```
+db.authors(4)
+    .delete
+    .then(
+        function() {
+            console.log("Deleted an author."
+        }
+    );
+```
+
 Compatibility
 =============
 
