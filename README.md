@@ -470,7 +470,7 @@ Retrieving an instance from the database:
 ```
 // Retrieve the author with id 4, then log their name
 db.authors(4)
-    .get
+    .get()
     .then(
         function(author) {
             console.log(author.getFirstName());
@@ -481,10 +481,10 @@ db.authors(4)
 Deleting an instance from the database:
 ```
 db.authors(4)
-    .delete
+    .delete()
     .then(
         function() {
-            console.log("Deleted an author."
+            console.log("Deleted an author.")
         }
     );
 ```
