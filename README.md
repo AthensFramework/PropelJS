@@ -416,7 +416,7 @@ example:
                 'CSRF-TOKEN': 'c06pmdts636djbbe'
             }
         }
-    };
+    );
 ```
 
 JavaScript Library Syntax
