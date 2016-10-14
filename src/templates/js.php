@@ -158,6 +158,21 @@ var <?php echo $databaseName; ?> = {};
         };
 
         /**
+        * Retrieve <?php echo $tablePlurals[$tableName]; ?> with attributes matching the current <?php echo $tableName; ?>.
+        *
+        * @returns {*}
+        */
+        var find = function()
+        {
+            var <?php echo $tableName; ?> = this;
+    
+            return doAJAX(
+                'GET',
+                '<?php echo $tablePlurals[$tableName]; ?>/?' + $.param(attributes)
+            ).then(function(result) {attributes = result; return <?php echo $tableName; ?>;})
+        };
+
+        /**
          * Perform the update or the create action for this <?php echo $tableName; ?>.
          * 
          * @returns {*}
@@ -187,6 +202,7 @@ var <?php echo $databaseName; ?> = {};
 
         return {
             'get': get,
+            'find': find,
             'delete': remove,
             'save': save,
             'getId': getId,<?php echo "\n"; foreach ($columns as $columnName => $columnType) { if ($columnName !== 'Id') { ?><?php echo "'get$columnName': get$columnName,\n"; ?>

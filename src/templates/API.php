@@ -46,6 +46,14 @@ class API {
     const ACTION_DESTROY = 'DESTROY';
 
     /**
+    * @return string
+    */
+    protected static function getLocation()
+    {
+        return strtok($_SERVER['REQUEST_URI'], '?');
+    }
+
+    /**
      * @return string
      */
     public static function getMethod()
@@ -62,7 +70,7 @@ class API {
     public static function getResourceName()
     {
         if (static::$resourceName === null) {
-            $path = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
+            $path = explode('/', trim(static::getLocation(), '/'));
             
             if (is_numeric(end($path)) === true) {
                 array_pop($path);
@@ -79,7 +87,7 @@ class API {
     public static function getResourceId()
     {
         if (static::$resourceId === null) {
-            $path = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
+            $path = explode('/', trim(static::getLocation(), '/'));
             static::$resourceId = is_numeric(end($path)) === true ? array_pop($path) : null;
         }
         return static::$resourceId;
@@ -94,6 +102,14 @@ class API {
             static::$data = json_decode(file_get_contents("php://input"), true);
         }
         return static::$data;
+    }
+
+    /**
+    * @return string[]
+    */
+    public static function getQueryData()
+    {
+        return $_GET;
     }
 
     /**
@@ -187,12 +203,40 @@ class API {
     }
 
     /**
-     * @param ModelCriteria $query
-     */
+    * @param ModelCriteria $query
+    * @return string
+    */
     protected static function listResources(ModelCriteria $query)
     {
-        header("HTTP/1.0 400 Bad Request");
-        die("The \"List\" action is not yet supported.");
+        $queryData = static::getQueryData();
+        
+        foreach ($queryData as $columnName => $value) {
+            if ($query->getTableMap()->hasColumnByPhpName($columnName) && trim($value) !== '') {
+                $query->filterBy($columnName, $value);
+            }
+        }
+        
+        $queryData = array_merge(['offset' => 0, 'limit' => 25], $queryData);
+        
+        $query->offset($queryData['offset'])->limit($queryData['limit']);
+        
+        $queryDataNext = $queryData;
+        $queryDataNext['offset'] += $queryData['limit'];
+        
+        $queryDataPrevious = $queryData;
+        $queryDataPrevious['offset'] = max($queryData['offset'] - $queryData['limit'], 0);
+        
+        return json_encode(
+            [
+                'current' => static::getLocation() . '?' . http_build_query($queryData),
+                'previous' => (int)$queryData['offset'] === 0 ?
+                    null :
+                    static::getLocation() . '?' . http_build_query($queryDataPrevious),
+                'next' => static::getLocation() . '?' . http_build_query($queryDataNext),
+                'data' => $query->find()->toArray()
+            ]
+            , JSON_UNESCAPED_SLASHES
+        );
     }
 
     /**
@@ -243,7 +287,7 @@ class API {
         $resource = static::getResourceOr404($query, $resourceId);
         $resource->delete();
 
-        return "";
+        return "{}";
     }
 
     /**
