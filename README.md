@@ -489,6 +489,20 @@ db.authors(4)
     );
 ```
 
+You can retrieve multiple instances from the database by doing a GET without specifying an ID. Here, we search for all authors with the first name John. The resulting collection `authors` supports a jQuery style `each`:
+```
+db.authors()
+    .setFirstName('John')
+    .get()
+    .then(
+        function(authors) {
+            authors.each(function(author) {
+                console.log('Found author John ' + author.getLastName() + '.');
+            });
+        }
+    );
+```
+
 Compatibility
 =============
 
