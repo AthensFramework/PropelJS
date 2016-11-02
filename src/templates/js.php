@@ -67,6 +67,20 @@ var <?php echo $databaseName; ?> = {};
             }
         );
     };
+
+    var Collection = function(resources) {
+
+        var each = function(func) {
+            for(var i = 0; i < resources.length; i++) {
+                func(resources[i]);
+            }
+        };
+
+        return {
+        each: each
+        }
+    };
+
     <?php foreach ($tableColumns as $tableName => $columns) { ?>
 
     var <?php echo $tablePhpNames[$tableName]; ?> = function(id) {
@@ -164,13 +178,30 @@ var <?php echo $databaseName; ?> = {};
         */
         var find = function()
         {
-            var <?php echo $tableName; ?> = this;
-    
             return doAJAX(
                 'GET',
                 '<?php echo $tablePlurals[$tableName]; ?>/?' + $.param(attributes)
-            ).then(function(result) {attributes = result; return <?php echo $tableName; ?>;})
-        };
+                ).then(function(result) {
+
+                    var results = [];
+                    for (var i = 0; i < result.data.length; i++) {
+                        var <?php echo $tableName; ?> = <?php echo $tablePhpNames[$tableName]; ?>(result.data[i].Id);
+
+                        for (var name in result.data[i]) {
+                            if (result.data[i].hasOwnProperty(name)) {
+                                var setter = "set" + name;
+
+                                if (<?php echo $tableName; ?>.hasOwnProperty(setter)) {
+                                    <?php echo $tableName; ?>[setter](result.data[i][name]);
+                                }
+                            }
+                        }
+                        results.push(<?php echo $tableName; ?>);
+                    }
+
+                    return Collection(results);
+                })
+            };
 
         /**
          * Perform the update or the create action for this <?php echo $tableName; ?>.
