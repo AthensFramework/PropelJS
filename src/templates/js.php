@@ -181,27 +181,27 @@ var <?php echo $databaseName; ?> = {};
             return doAJAX(
                 'GET',
                 '<?php echo $tablePlurals[$tableName]; ?>/?' + $.param(attributes)
-                ).then(function(result) {
+            ).then(function(result) {
 
-                    var results = [];
-                    for (var i = 0; i < result.data.length; i++) {
-                        var <?php echo $tableName; ?> = <?php echo $tablePhpNames[$tableName]; ?>(result.data[i].Id);
+                var results = [];
+                for (var i = 0; i < result.data.length; i++) {
+                    var <?php echo $tableName; ?> = <?php echo $tablePhpNames[$tableName]; ?>(result.data[i].Id);
 
-                        for (var name in result.data[i]) {
-                            if (result.data[i].hasOwnProperty(name)) {
-                                var setter = "set" + name;
+                    for (var name in result.data[i]) {
+                        if (result.data[i].hasOwnProperty(name)) {
+                            var setter = "set" + name;
 
-                                if (<?php echo $tableName; ?>.hasOwnProperty(setter)) {
-                                    <?php echo $tableName; ?>[setter](result.data[i][name]);
-                                }
+                            if (<?php echo $tableName; ?>.hasOwnProperty(setter)) {
+                                <?php echo $tableName; ?>[setter](result.data[i][name]);
                             }
                         }
-                        results.push(<?php echo $tableName; ?>);
                     }
+                    results.push(<?php echo $tableName; ?>);
+                }
 
-                    return Collection(results);
-                })
-            };
+                return Collection(results);
+            })
+        };
 
         /**
          * Perform the update or the create action for this <?php echo $tableName; ?>.
