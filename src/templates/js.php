@@ -234,7 +234,7 @@ var <?php echo $databaseName; ?> = {};
                     
                     return <?php echo $tableName; ?>;
                 } else {
-                    return undefined;
+                    return null;
                 }
         
             })
