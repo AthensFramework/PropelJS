@@ -204,6 +204,43 @@ var <?php echo $databaseName; ?> = {};
         };
 
         /**
+        * Retrieve  a single <?php echo $tableName; ?> with attributes matching the current <?php echo $tableName; ?>.
+        *
+        * @returns {*}
+        */
+        var findOne = function()
+        {
+            var findAttributes = attributes;
+
+            findAttributes['limit'] = 1;
+
+            return doAJAX(
+                'GET',
+                '<?php echo $tablePlurals[$tableName]; ?>/?' + $.param(findAttributes)
+            ).then(function(result) {
+        
+                if (result.data.length > 0) {
+                    var <?php echo $tableName; ?> = <?php echo $tablePhpNames[$tableName]; ?>(result.data[i].Id);
+            
+                    for (var name in result.data[i]) {
+                        if (result.data[i].hasOwnProperty(name)) {
+                            var setter = "set" + name;
+                    
+                            if (<?php echo $tableName; ?>.hasOwnProperty(setter)) {
+                                <?php echo $tableName; ?>[setter](result.data[i][name]);
+                            }
+                        }
+                    }
+                    
+                    return <?php echo $tableName; ?>;
+                } else {
+                    return undefined;
+                }
+        
+            })
+        };
+        
+        /**
          * Perform the update or the create action for this <?php echo $tableName; ?>.
          * 
          * @returns {*}
