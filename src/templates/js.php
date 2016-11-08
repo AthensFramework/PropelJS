@@ -271,6 +271,7 @@ var <?php echo $databaseName; ?> = {};
         return {
             'get': get,
             'find': find,
+            'findOne': findOne(),
             'delete': remove,
             'save': save,
             'getId': getId,<?php echo "\n"; foreach ($columns as $columnName => $columnType) { if ($columnName !== 'Id') { ?><?php echo "'get$columnName': get$columnName,\n"; ?>
