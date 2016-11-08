@@ -270,7 +270,7 @@ var <?php echo $databaseName; ?> = {};
 
         return {
             'get': get,
-            'find': find(),
+            'find': find,
             'findOne': findOne,
             'delete': remove,
             'save': save,
