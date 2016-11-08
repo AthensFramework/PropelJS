@@ -220,14 +220,14 @@ var <?php echo $databaseName; ?> = {};
             ).then(function(result) {
         
                 if (result.data.length > 0) {
-                    var <?php echo $tableName; ?> = <?php echo $tablePhpNames[$tableName]; ?>(result.data[i].Id);
+                    var <?php echo $tableName; ?> = <?php echo $tablePhpNames[$tableName]; ?>(result.data[0].Id);
             
-                    for (var name in result.data[i]) {
-                        if (result.data[i].hasOwnProperty(name)) {
+                    for (var name in result.data[0]) {
+                        if (result.data[0].hasOwnProperty(name)) {
                             var setter = "set" + name;
                     
                             if (<?php echo $tableName; ?>.hasOwnProperty(setter)) {
-                                <?php echo $tableName; ?>[setter](result.data[i][name]);
+                                <?php echo $tableName; ?>[setter](result.data[0][name]);
                             }
                         }
                     }
@@ -270,8 +270,8 @@ var <?php echo $databaseName; ?> = {};
 
         return {
             'get': get,
-            'find': find,
-            'findOne': findOne(),
+            'find': find(),
+            'findOne': findOne,
             'delete': remove,
             'save': save,
             'getId': getId,<?php echo "\n"; foreach ($columns as $columnName => $columnType) { if ($columnName !== 'Id') { ?><?php echo "'get$columnName': get$columnName,\n"; ?>
