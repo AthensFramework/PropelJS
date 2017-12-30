@@ -82,7 +82,7 @@ The following steps assume you're using [Composer](https://getcomposer.org/) and
 [LAMP stack](https://en.wikipedia.org/wiki/LAMP_%28software_bundle%29). If you're not using Composer, then you
 can adapt these instructions to your own deployment environment.
 
-1. Install PropelJS: Add `"athens/propel-js": "0.*"` to your Composer dependencies and run `composer update`.
+1. Install PropelJS: Add `"athens/propel-js": "1.*"` to your Composer dependencies and run `composer update`.
 
 2. Propel Schema: Add the `<behavior name="propel_js" />` between your `<database></database>` tags. PropelJS
    is a *database* behavior, so it should *not* be placed inside `<table></table>` tags.
@@ -167,14 +167,14 @@ The `webroot/` directory will serve as the root of our web domain, with `index.p
 Step 1: Installation
 --------------------
 
-This library is published on Packagist. To install using Composer, add the `"athens/propel-js": "0.*"` line to
+This library is published on Packagist. To install using Composer, add the `"athens/propel-js": "1.*"` line to
 your `"require"` section:
 
 ```
 {
     "require": {
         ...
-        "athens/propel-js": "0.*",
+        "athens/propel-js": "1.*",
         ...
     }
 }
