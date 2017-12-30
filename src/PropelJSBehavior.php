@@ -12,6 +12,8 @@ class PropelJSBehavior extends Behavior
     /** @var  PluralizerInterface */
     protected $pluralizer;
 
+    private static $tablesProcessed = 0;
+
     /**
      * @return PluralizerInterface
      */
@@ -22,10 +24,18 @@ class PropelJSBehavior extends Behavior
         
         return $this->pluralizer;
     }
-    
-    public function modifyDatabase()
+
+    public function modifyTable()
     {
-        parent::modifyDatabase();
+        self::$tablesProcessed++;
+
+        if (self::$tablesProcessed === count($this->getTables())) {
+            self::execute();
+        }
+    }
+    
+    public function execute()
+    {
 
         $jsDirectory = getcwd() . '/generated-js';
         $apiDirectory = getcwd() . '/generated-api';

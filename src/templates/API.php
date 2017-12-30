@@ -144,7 +144,7 @@ class API {
     /**
      * @return ModelCriteria
      */
-    public function getQueryOr404()
+    public static function getQueryOr404()
     {
         if (static::$query === null) {
             $resourceName = static::getResourceName();
